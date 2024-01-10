@@ -9,7 +9,7 @@
         "paths": {
             "@/*": ["src/*"]
         },
-
+        "allowJs": true,//irtual script not found, may missing ＜script lang=“ts“＞ / “allowJs“: true / jsconfig.json.
         /* Bundler mode */
         "moduleResolution": "node",
         "allowImportingTsExtensions": true,
