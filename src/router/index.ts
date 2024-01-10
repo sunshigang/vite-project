@@ -5,12 +5,14 @@ import About from '../components/About.vue'
 import NotFound from '../components/NotFound.vue'
 import CeShi from '../components/CeShi.vue'
 import Test from '../components/Test.vue'
+import Cesium from '../components/Cesium.vue'
 const routes = [
   { path: '/', name: 'Home', component: Home },
   { path: '/register', name: 'Register', component: Register },
   { path: '/about', name: 'About', component: About },
   { path: '/ceshi', name: 'CeShi', component: CeShi },
   { path: '/test', name: 'Test', component: Test },
+  { path: '/cesium', name: 'Cesium', component: Cesium },
   { path: '/:path(.*)', component: NotFound }
 ]
 

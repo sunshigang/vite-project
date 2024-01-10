@@ -18,6 +18,9 @@
         <li>
           <router-link to="/test">测试1</router-link>
         </li>
+        <li>
+          <router-link to="/cesium">cesium</router-link>
+        </li>
       </ul>
     </div>
     <div class="content"><router-view /></div>
@@ -33,22 +36,23 @@
 .container {
   width: 100%;
   height: 100%;
+  position: absolute;
   /* background-color: red; */
 }
 
 .header {
   width: 100%;
   height: 10%;
-  padding-bottom: 200px;
+  /* padding-bottom: 200px; */
   /* background-color: rgb(26, 38, 209); */
 }
 
 .content {
   width: 100%;
-  height: 90%;
+  height: 95%;
   position: absolute;
   bottom: 0;
-  /* background-color: rgb(13, 228, 95); */
+  background-color: rgb(13, 228, 95);
 }
 
 ul {
