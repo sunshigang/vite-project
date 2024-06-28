@@ -6,6 +6,8 @@ import NotFound from '../components/NotFound.vue'
 import CeShi from '../components/CeShi.vue'
 import Test from '../components/Test.vue'
 import Cesium from '../components/Cesium.vue'
+import Echart from '../components/Echart.vue'
+import Echart1 from '../components/Echart1.vue'
 const routes = [
   { path: '/', name: 'Home', component: Home },
   { path: '/register', name: 'Register', component: Register },
@@ -13,6 +15,8 @@ const routes = [
   { path: '/ceshi', name: 'CeShi', component: CeShi },
   { path: '/test', name: 'Test', component: Test },
   { path: '/cesium', name: 'Cesium', component: Cesium },
+  { path: '/echart', name: 'Echart', component: Echart },
+  { path: '/echart1', name: 'Echart1', component: Echart1 },
   { path: '/:path(.*)', component: NotFound }
 ]
 

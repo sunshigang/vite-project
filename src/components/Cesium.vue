@@ -1,13 +1,69 @@
 <template>
     <div id="cesiumContainer">
         <div id="info"></div>
+        <el-tree class="elTree" :data="data" node-key="id" default-expand-all :props="defaultProps" @node-click="handleNodeClick" @check-change="handleCheckChange" ref="tree" show-checkbox></el-tree>
     </div>
 </template>
 <script setup>
 import * as Cesium from 'cesium'
-import { onMounted } from 'vue'
-import  SuperGif  from 'libgif'
+import { onMounted, ref } from 'vue'
+import SuperGif from 'libgif'
+const data = ref([
+    {
+        id: 1,
+        name: '模型',
+        children: [
+            {
+                id: 2,
+                name: '倾斜模型',
+            },
+        ],
+    },
+])
+const modelChecked = ref([])
+const obliqueTileset = ref([])
+const defaultProps = ref({ children: 'children', label: 'name' })
+const handleNodeClick = data => {
+    console.log(data)
+}
+const handleCheckChange = (data, checked) => {
+    modelChecked.value = data.name
+    console.log('🚀 ~ handleCheckChange ~ modelChecked.value:', modelChecked.value)
+    if (modelChecked.value == '倾斜模型') {
+        addCesium3DTileset('http://192.168.100.4:8092/beijingModel/osgb/tileset.json')
+    } else {
+        removeCesium3DTileset()
+    }
+}
+async function addCesium3DTileset(url) {
+    try {
+        obliqueTileset.value = await Cesium.Cesium3DTileset.fromUrl(url, {
+            show: true,
+            maximumScreenSpaceError: 16,
+            maximumMemoryUsage: 1024,
+            cullWithChildrenBounds: true,
+            skipLevelOfDetail: true,
+            baseScreenSpaceError: 1024,
+            skipScreenSpaceErrorFactor: 16,
+            skipLevels: 1,
+            immediatelyLoadDesiredLevelOfDetail: false,
+            loadSiblings: false,
+        })
+        viewer.scene.primitives.add(obliqueTileset.value)
+        viewer.zoomTo(obliqueTileset.value, new Cesium.HeadingPitchRange(0.0, -0.5, obliqueTileset.value.boundingSphere.radius * 2.0))
+    } catch (error) {
+        console.log(`Failed to load tileset: ${error}`)
+    }
+}
+async function removeCesium3DTileset() {
+    obliqueTileset.value.show = false
+}
 onMounted(() => {
+    //标注
+    const TDT_CIA_C = 'http://{s}.tianditu.gov.cn/cia_c/wmts?service=wmts&request=GetTile&version=1.0.0' + '&LAYER=cia&tileMatrixSet=c&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}' + '&style=default&format=tiles&tk=d4782516c98542ebc0bdc11ec86b68ca'
+
+    const TDT_IMG_C = 'http://{s}.tianditu.gov.cn/img_c/wmts?service=wmts&request=GetTile&version=1.0.0' + '&LAYER=img&tileMatrixSet=c&TileMatrix={TileMatrix}&TileRow={TileRow}&TileCol={TileCol}' + '&style=default&format=tiles&tk=d4782516c98542ebc0bdc11ec86b68ca'
+
     Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkNTc3MDhmMC02OGYxLTQzNTQtODJiYi05YmUyZTYxYmJhYTIiLCJpZCI6MzI5NjgsImlhdCI6MTY0NDk3NzIyOH0.Uanby3XNZVn1eq35LIyDczNmOo9J1uMd3uvjN1P8F7M'
     const viewer = new Cesium.Viewer('cesiumContainer', {
         animation: false, // 动画小组件
@@ -25,7 +81,34 @@ onMounted(() => {
         navigationInstructionsInitiallyVisible: false,
         // terrain: Cesium.Terrain.fromWorldTerrain(),
         // baseLayer: Cesium.ImageryLayer.fromProviderAsync(Cesium.ArcGisMapServerImageryProvider.fromBasemapType(Cesium.ArcGisBaseMapType.SATELLITE)),
+        // imageryProvider: new Cesium.WebMapTileServiceImageryProvider({
+        //     url: TDT_IMG_C,
+        //     layer: 'tdtImg_c',
+        //     style: 'default',
+        //     format: 'tiles',
+        //     tileMatrixSetID: 'c',
+        //     subdomains: ['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7'],
+        //     tilingScheme: new Cesium.GeographicTilingScheme(),
+        //     tileMatrixLabels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19'],
+        //     maximumLevel: 50,
+        //     show: false,
+        // }),
     })
+    viewer.imageryLayers.addImageryProvider(
+        new Cesium.WebMapTileServiceImageryProvider({
+            //调用影响中文注记服务
+            url: TDT_CIA_C,
+            layer: 'tdtImg_c',
+            style: 'default',
+            format: 'tiles',
+            tileMatrixSetID: 'c',
+            subdomains: ['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7'],
+            tilingScheme: new Cesium.GeographicTilingScheme(),
+            tileMatrixLabels: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19'],
+            maximumLevel: 50,
+            show: false,
+        })
+    )
     window.viewer = viewer //挂载到window上
     viewer._cesiumWidget._creditContainer.style.display = 'none' //	去除版权信息
     // viewer.scene.globe.enableLighting = true
@@ -174,14 +257,14 @@ onMounted(() => {
         let div = document.createElement('div')
         let img = document.createElement('img')
         div.appendChild(img)
-        img.src = '/public/assets/circle_d.gif'
+        img.src = '/assets/circle_d.gif'
         img.onload = () => {
             let rub = new SuperGif({
                 gif: img,
             })
             rub.load(() => {
-                 viewer.entities.add({
-                    position: Cesium.Cartesian3.fromDegrees(120.5552,31.87532,10),
+                viewer.entities.add({
+                    position: Cesium.Cartesian3.fromDegrees(120.5552, 31.87532, 10),
                     billboard: {
                         image: new Cesium.CallbackProperty(() => {
                             return rub.get_canvas().toDataURL('image/png')
@@ -197,6 +280,32 @@ onMounted(() => {
         }
     }
     createGif()
+    console.log('🚀 ~ onMounted ~ modelChecked.value:', modelChecked.value)
+    if (modelChecked.value == '倾斜模型') {
+        obliqueTileset.value = viewer.scene.primitives.add(
+            new Cesium.Cesium3DTileset({
+                url: 'http://192.168.100.4:8092/beijingModel/osgb/tileset.json',
+                show: true,
+                maximumScreenSpaceError: 16,
+                maximumMemoryUsage: 1024,
+                cullWithChildrenBounds: true,
+                skipLevelOfDetail: true,
+                baseScreenSpaceError: 1024,
+                skipScreenSpaceErrorFactor: 16,
+                skipLevels: 1,
+                immediatelyLoadDesiredLevelOfDetail: false,
+                loadSiblings: false,
+            })
+        )
+        obliqueTileset.value.readyPromise
+            .then(tileset => {
+                viewer.zoomTo(tileset, new Cesium.HeadingPitchRange(0.0, -0.5, tileset.boundingSphere.radius * 2.0))
+            })
+            .catch(function (error) {
+                console.log(error)
+            })
+    } else {
+    }
 })
 </script>
 <style scoped>
@@ -217,5 +326,16 @@ body {
     background: rgba(255, 255, 255, 0.5);
     border: 2px solid greenyellow;
     border-radius: 4px;
+}
+.elTree {
+    position: absolute;
+    width: 200px;
+    height: 100px;
+    top: 10px;
+    left: 10px;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.5);
+    /* border: 2px solid greenyellow;
+    border-radius: 4px; */
 }
 </style>

@@ -21,6 +21,12 @@
         <li>
           <router-link to="/cesium">cesium</router-link>
         </li>
+        <li>
+          <router-link to="/echart">echart</router-link>
+        </li>
+        <li>
+          <router-link to="/echart1">echart1</router-link>
+        </li>
       </ul>
     </div>
     <div class="content"><router-view /></div>
@@ -36,7 +42,6 @@
 .container {
   width: 100%;
   height: 100%;
-  position: absolute;
   /* background-color: red; */
 }
 
@@ -52,7 +57,7 @@
   height: 95%;
   position: absolute;
   bottom: 0;
-  background-color: rgb(13, 228, 95);
+  /* background-color: rgb(13, 228, 95); */
 }
 
 ul {
